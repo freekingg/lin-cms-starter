@@ -465,6 +465,7 @@ export default {
      * @param {Array} uploadList 需要上传的缓存集合, 集合中包含回调函数
      */
     uploadCatch(uploadList) {
+      console.log('uploadList: ', uploadList);
       const data = {}
       uploadList.forEach((item, index) => {
         data[`file_${index}`] = item.img.file

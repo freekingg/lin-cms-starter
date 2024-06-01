@@ -3,6 +3,7 @@ import KoaBodyParser from 'koa-bodyparser';
 import cors from '@koa/cors';
 import mount from 'koa-mount';
 import serve from 'koa-static';
+import requestIp from 'request-ip';
 import { config, json, logging, success, jwt, Loader } from 'lin-mizar';
 import { PermissionModel } from './model/permission';
 import WebSocket from './extension/socket/socket';
@@ -30,6 +31,14 @@ function applyCors (app) {
 }
 
 /**
+ * 获取客户端IP
+ * @param app koa实例
+ */
+function applyIp (app) {
+  app.use(requestIp.mw());
+}
+
+/**
  * 解析Body参数
  * @param app koa实例
  */
@@ -45,6 +54,7 @@ function applyBodyParse (app) {
  */
 function applyStatic (app, prefix = '/assets') {
   const assetsDir = config.getItem('file.storeDir', 'app/static');
+  console.log('assetsDir: ', assetsDir);
   app.use(mount(prefix, serve(assetsDir)));
 }
 

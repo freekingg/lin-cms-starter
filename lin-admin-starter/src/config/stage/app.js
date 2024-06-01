@@ -1,0 +1,23 @@
+const appRouter = {
+  route: null,
+  name: null,
+  title: '产品管理',
+  type: 'folder', // 类型: folder, tab, view
+  icon: 'iconfont icon-tushuguanli',
+  filePath: 'view/app/',
+  order: null,
+  inNav: true,
+  children: [
+    {
+      title: '产品列表',
+      type: 'view',
+      name: 'appList',
+      route: '/app/list',
+      filePath: 'view/app/app-list.vue',
+      inNav: true,
+      icon: 'iconfont icon-tushuguanli',
+    },
+  ],
+}
+
+export default appRouter

@@ -2,7 +2,7 @@
 
 module.exports = {
   db: {
-    database: 'lcs-starter',
+    database: 'packing',
     host: 'localhost',
     dialect: 'mysql',
     port: 3306,
@@ -11,7 +11,11 @@ module.exports = {
     logging: false,
     timezone: '+08:00',
     define: {
-      charset: 'utf8mb4'
+      charset: 'utf8mb4',
+    },
+    dialectOptions: {
+      dateStrings: true,
+      typeCast: true
     }
   },
   secret:

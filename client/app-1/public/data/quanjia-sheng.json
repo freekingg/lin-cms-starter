@@ -1,0 +1,112 @@
+[
+  {
+    "id": "1",
+    "name": "基隆市",
+    "info": null
+  },
+  {
+    "id": "2",
+    "name": "台北市",
+    "info": null
+  },
+  {
+    "id": "3",
+    "name": "新北市",
+    "info": null
+  },
+  {
+    "id": "4",
+    "name": "桃園市",
+    "info": null
+  },
+  {
+    "id": "5",
+    "name": "新竹縣",
+    "info": null
+  },
+  {
+    "id": "6",
+    "name": "新竹市",
+    "info": null
+  },
+  {
+    "id": "7",
+    "name": "苗栗縣",
+    "info": null
+  },
+  {
+    "id": "8",
+    "name": "台中市",
+    "info": null
+  },
+  {
+    "id": "9",
+    "name": "彰化縣",
+    "info": null
+  },
+  {
+    "id": "10",
+    "name": "南投縣",
+    "info": null
+  },
+  {
+    "id": "11",
+    "name": "雲林縣",
+    "info": null
+  },
+  {
+    "id": "12",
+    "name": "嘉義縣",
+    "info": null
+  },
+  {
+    "id": "13",
+    "name": "嘉義市",
+    "info": null
+  },
+  {
+    "id": "14",
+    "name": "台南市",
+    "info": null
+  },
+  {
+    "id": "15",
+    "name": "高雄市",
+    "info": null
+  },
+  {
+    "id": "16",
+    "name": "屏東縣",
+    "info": null
+  },
+  {
+    "id": "17",
+    "name": "宜蘭縣",
+    "info": null
+  },
+  {
+    "id": "18",
+    "name": "花蓮縣",
+    "info": null
+  },
+  {
+    "id": "19",
+    "name": "台東縣",
+    "info": null
+  },
+  {
+    "id": "20",
+    "name": "金門縣",
+    "info": null
+  },
+  {
+    "id": "21",
+    "name": "連江縣",
+    "info": null
+  },
+  {
+    "id": "22",
+    "name": "澎湖縣",
+    "info": null
+  }
+]

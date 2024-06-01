@@ -2,6 +2,15 @@
   <div class="app-nav-bar">
     <div class="nav-content">
       <breadcrumb />
+      <!-- <div class="m">
+        <el-alert title="Success alert" type="success" show-icon :closable="false" >
+          <template #title>
+          <div style="display: block">
+            <div>用户姓名: </div>
+          </div>
+        </template>
+        </el-alert>
+      </div> -->
       <div class="right-info">
         <lin-notify
           height="370"

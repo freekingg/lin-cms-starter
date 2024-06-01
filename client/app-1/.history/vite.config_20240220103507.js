@@ -1,0 +1,31 @@
+import { fileURLToPath, URL } from 'node:url'
+
+import { defineConfig } from 'vite'
+import vue from '@vitejs/plugin-vue'
+
+// https://vitejs.dev/config/
+export default defineConfig({
+  plugins: [
+    vue(),
+  ],
+  resolve: {
+    alias: {
+      '@': fileURLToPath(new URL('./src', import.meta.url)),
+
+    },
+
+  },
+  server: {
+    host: '0.0.0.0',
+    port: 4000,
+    open: true,
+    proxy: {
+      [import.meta.env.VUE_APP_BASE_API]: {
+        target: import.meta.env.VUE_APP_BASE_URL,   //接口地址
+        changeOrigin: true,
+        rewrite: (path) => path.replace(['^' + import.meta.env.VUE_APP_BASE_API], '')
+      },
+    }
+  }
+})
+

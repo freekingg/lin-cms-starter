@@ -6,6 +6,8 @@ module.exports = {
     quotes: ['warn', 'single'],
     'camelcase': 0,
     'eol-last': 0,
+    'comma-dangle': 0,
+    'space-before-function-paren':0,
     'jest/no-disabled-tests': 'warn',
     'jest/no-focused-tests': 'error',
     'jest/no-identical-title': 'error',

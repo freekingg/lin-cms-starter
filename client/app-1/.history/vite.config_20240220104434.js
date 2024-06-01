@@ -1,0 +1,62 @@
+import { fileURLToPath, URL } from 'node:url'
+
+import { defineConfig ,loadEnv} from 'vite'
+
+import vue from '@vitejs/plugin-vue'
+
+
+// https://vitejs.dev/config/
+// export default defineConfig({
+  export default defineConfig(({mode}) => {
+    //mode 模式字符串  process.cwd()项目  根目录
+    //返回值  import.meta.env
+    const env =  loadEnv(mode, process.cwd());
+    return {
+  // base:'mxg',
+    //开发环境有效，生产环境无效
+    server: {
+      port: 8080,// 端口号
+      open: true,//启动项目自动打开浏览器
+      host: '0.0.0.0',//'0.0.0.0'（开放给所有ip访问此项目）
+      proxy: {
+        //匹配以开头的请求，交给代理服务器转发到目标接口
+        // '/dev-api': {
+          [env.VITE_APP_BASE_API] :{ //key变量要加中括号 []
+          //代理后的目标地址
+          //target:'https//elementplus.cn'
+          target:env.VITE_APP_SERVICE_URL,
+          //dev-api/test  去除dev-api,  变成test  最终变成https//elementplus.cn
+          // rewrite: (path) => path.replace(/^\/dev-api/, ''),
+          rewrite:(path)=>{path.replace(new RegExp(`^${env.VITE_APP_BASE_API}/`),'')},
+          //开启代理
+          changeOrigin:true,
+        }
+      }
+    },
+    plugins: [
+      vue(),
+    ],
+    resolve: {
+      alias: {
+        '@': fileURLToPath(new URL('./src', import.meta.url))
+      }
+    }
+    }
+   
+    
+  })
+// https://vitejs.dev/config/
+// export default defineConfig({
+//   plugins: [
+//     vue(),
+//   ],
+//   resolve: {
+//     alias: {
+//       '@': fileURLToPath(new URL('./src', import.meta.url)),
+
+//     },
+    
+//   },
+  
+// })
+

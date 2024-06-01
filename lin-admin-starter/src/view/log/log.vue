@@ -147,7 +147,7 @@ export default {
       search.totalCount = 0
       finished.value = false
       const name = search.searchUser === '全部人员' ? '' : search.searchUser
-
+console.log(search.searchDate);
       const res = await logModel.searchLogs({
         page: 0, // 初始化
         keyword: search.searchKeyword,

@@ -201,6 +201,45 @@ Utils.hasPermission = (permissions, route, user) => {
   return true
 }
 
+Utils.copyToClipboard=(text)=> {
+  return new Promise((resolve,reject)=>{
+ // 创建一个临时的文本区域元素
+ const textArea = document.createElement('textarea');
+ textArea.value = text;
+
+ // 防止用户看到这个元素
+ textArea.style.position = 'fixed';
+ textArea.style.top = '0';
+ textArea.style.left = '0';
+ textArea.style.width = '2em';
+ textArea.style.height = '2em';
+ textArea.style.padding = '0';
+ textArea.style.border = 'none';
+ textArea.style.outline = 'none';
+ textArea.style.boxShadow = 'none';
+ textArea.style.background = 'transparent';
+
+ // 将文本区域元素添加到 DOM 中
+ document.body.appendChild(textArea);
+ // 选中文本区域中的文本
+ textArea.select();
+ // 执行复制命令
+ try {
+   const successful = document.execCommand('copy');
+   const msg = successful ? 'successful' : 'unsuccessful';
+   console.log('Copy text command was ' + msg);
+   resolve()
+ } catch (err) {
+   console.error('Oops, unable to copy', err);
+   reject()
+ }
+
+ // 移除文本区域元素
+ document.body.removeChild(textArea);
+  })
+
+}
+
 let cached
 /**
  * 获取窗口滚动条大小, From: https://github.com/react-component/util/blob/master/src/getScrollBarSize.js

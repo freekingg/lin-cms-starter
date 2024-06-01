@@ -1,7 +1,9 @@
 import Utils from '@/lin/util/util'
 import adminConfig from './admin'
-import bookConfig from './book' // 引入图书管理路由文件
-import demoConfig from './demo' // 引入图书管理路由文件
+import bookConfig from './book'
+import demoConfig from './demo'
+import appConfig from './app'
+import orderConfig from './order'
 import pluginsConfig from './plugin'
 
 // eslint-disable-next-line import/no-mutable-exports
@@ -45,6 +47,8 @@ let homeRouter = [
     inNav: false,
     icon: 'iconfont icon-rizhiguanli',
   },
+  appConfig,
+  orderConfig,
   demoConfig,
   bookConfig,
   adminConfig,
@@ -52,6 +56,7 @@ let homeRouter = [
 
 // 接入插件
 const plugins = [...pluginsConfig]
+// const plugins = []
 filterPlugin(homeRouter)
 homeRouter = homeRouter.concat(plugins)
 
