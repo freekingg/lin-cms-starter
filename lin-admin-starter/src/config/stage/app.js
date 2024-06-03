@@ -5,7 +5,7 @@ const appRouter = {
   type: 'folder', // 类型: folder, tab, view
   icon: 'iconfont icon-tushuguanli',
   filePath: 'view/app/',
-  order: null,
+  order: 4,
   inNav: true,
   children: [
     {

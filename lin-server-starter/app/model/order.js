@@ -145,6 +145,13 @@ Order.init(
       sequelize,
       tableName: "order",
       modelName: "order",
+      indexes: [
+        {
+          name: 'phone_del',
+          unique: true,
+          fields: ['user_phone', 'delete_time']
+        }
+      ]
     },
     InfoCrudMixin.options
   )

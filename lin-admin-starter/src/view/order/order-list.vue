@@ -19,7 +19,15 @@
 
         <el-form-item>
           <el-button :icon="Search" native-type="submit" type="primary" @click="getDataList"> 查询 </el-button>
-          <el-button :icon="Plus" native-type="submit" type="success" @click="configUpdateHandle()" v-permission="{ permission: '创建订单', type: 'disabled' }"> 添加 </el-button>
+          <el-button
+            :icon="Plus"
+            native-type="submit"
+            type="success"
+            @click="configUpdateHandle()"
+            v-permission="{ permission: '创建订单', type: 'disabled' }"
+          >
+            添加
+          </el-button>
           <el-button native-type="submit" type="info" @click="exportHandle()"> 导出 </el-button>
         </el-form-item>
       </el-form>
@@ -84,7 +92,7 @@
 
       <el-table-column prop="country" label="国家" min-width="100"></el-table-column>
       <el-table-column prop="summary" label="订单留言"></el-table-column>
-      <el-table-column label="操作" fixed="right" width="145">
+      <el-table-column label="操作" fixed="right" width="210">
         <template #default="scope">
           <el-button
             plain
@@ -94,7 +102,15 @@
             @click="configUpdateHandle(scope.row)"
             >编辑</el-button
           >
-          <!-- <el-button plain size="small" type="primary" @click="addOrUpdateHandle(scope.row)">编辑</el-button> -->
+          <el-button
+            plain
+            size="small"
+            :loading="faHuoLoading"
+            type="primary"
+            v-permission="{ permission: '发货', type: 'disabled' }"
+            @click="faHuoHandle(scope.row)"
+            >发货</el-button
+          >
           <el-button
             plain
             size="small"
@@ -127,6 +143,18 @@
     >
     </add-or-update> -->
 
+    <el-dialog v-model="dialogSkusVisible" title="发货信息">
+      <div>
+        <el-input v-model="skuForm" type="textarea" :autosize="{ minRows: 7, maxRows: 15 }" />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogSkusVisible = false" :loading="faHuoLoading">Cancel</el-button>
+          <el-button type="primary" @click="fahuo2Handle" :loading="faHuoLoading"> Confirm </el-button>
+        </div>
+      </template>
+    </el-dialog>
+
     <config-detail-drawer
       ref="configDetailRef"
       :key="addKey"
@@ -139,13 +167,14 @@
 </template>
 
 <script>
+import _axios, { get, put, _delete } from '@/lin/plugin/axios'
 import { onMounted, toRefs, reactive, ref, nextTick } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 import useViewModule from '@/lin/hook/view-module'
 import orderModel from '@/model/order'
 import AddOrUpdate from './components/app-add-or-update'
 import LinDatePicker from '@/component/base/date-picker/lin-date-picker'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import dayjs from 'dayjs'
 import Utils from '@/lin/util/util'
 import ConfigDetailDrawer from '@/view/order/components/config-detail-drawer.vue'
@@ -162,7 +191,7 @@ export default {
       getDataListIsPage: true,
       createdIsNeed: true,
       queryForm: {},
-      limit:50
+      limit: 50,
     })
     const { mixinData, getDataList, addOrUpdateHandle, deleteHandle, pageSizeChangeHandle, pageCurrentChangeHandle } =
       useViewModule(mixinViewData)
@@ -173,23 +202,22 @@ export default {
 
     onMounted(() => {})
 
-    const copyHandle = (v)=>{
+    const copyHandle = v => {
       Utils.copyToClipboard(v).then(() => {
         ElMessage.success(`已复制`)
       })
     }
 
-    const defaultTime= ref( [
-        new Date(2000, 1, 1, 0, 0, 0),
-        new Date(2000, 2, 1, 23, 59, 59)
-      ])
+    const dialogSkusVisible = ref(false)
+    const skuForm = ref()
+    const defaultTime = ref([new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)])
 
     const handleDateChange = date => {
-      console.log('date: ', date);
+      console.log('date: ', date)
       if (date) {
         mixinViewData.queryForm.start = dayjs(date[0]).format('YYYY-MM-DD HH:mm:ss')
         mixinViewData.queryForm.end = dayjs(date[1]).format('YYYY-MM-DD HH:mm:ss')
-      console.log(mixinViewData.queryForm);
+        console.log(mixinViewData.queryForm)
       } else {
         mixinViewData.queryForm.start = ''
         mixinViewData.queryForm.end = ''
@@ -223,7 +251,7 @@ export default {
     }
 
     const allStatus = ref([
-    {
+      {
         label: '待提交',
         value: 0,
         color: '#f504c2',
@@ -284,9 +312,121 @@ export default {
         }
       }
     }
+
+    const activeRow = ref({})
+    const outboundHandle = () => {
+      let row = activeRow.value
+      function getFormattedDate() {
+        const today = new Date()
+        const year = today.getFullYear()
+        const month = String(today.getMonth() + 1).padStart(2, '0')
+        const day = String(today.getDate()).padStart(2, '0')
+        return `WPZD`
+      }
+
+      let skus = []
+      if(skuForm.value){
+        skus = JSON.parse(skuForm.value)
+      }
+
+      let data = {
+        api_key: 'cd64ddf746489da0716818bd8b68a65f640004',
+        warehouse: 'ccdb60069df22b045f7648af732bd631952743',
+        orders_channel: '08503d9c697a48a08b264576deb87460231013',
+        orders_order_no: `WPZD${row.id}`,
+        orders_product_cn_name: row.app.name,
+        orders_product_en_name: 'underwear',
+        orders_declared_value: (+row.price * 0.27 * 0.3).toFixed(2),
+        orders_declared_currency: 'USD',
+        orders_cod_value: row.price,
+        orders_remark: row.order_summary,
+        orders_cod_currency: 'SAR',
+        orders_consignee_name: row.user_name,
+        orders_consignee_tel: row.user_phone,
+        orders_consignee_address: row.user_address,
+        orders_consignee_province: row.user_province,
+        orders_consignee_city: row.user_city,
+        orders_cust_declared_weight: '1',
+        orders_consignee_country_2_code: 'SA',
+        orders_product_hs_code: '6107110000',
+        orders_product_hs_code: '6107110000',
+        orders_goods_type: 'GC',
+        freight_payment_terms: 'PP',
+        orders_package_pcs: '1',
+        orders_picking_remark: '',
+        products: skus,
+      }
+      return _axios({
+        method: 'post',
+        url: 'v1/order/outbound/create',
+        data,
+      })
+    }
+    const faHuoLoading = ref(false)
+    const faHuoHandle = async item => {
+      dialogSkusVisible.value = true
+      if (item.config?.skus) {
+        skuForm.value = item.config.skus
+      } else {
+        skuForm.value = ''
+      }
+
+      activeRow.value = item
+
+      return
+
+      ElMessageBox.confirm('请确认发货信息是否准确无误, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning',
+      }).then(async result => {
+        faHuoLoading.value = true
+        try {
+          const res = await outboundHandle(item)
+          console.log('res: ', res)
+          if (res.error == 0) {
+            ElMessage.success(`${res.msg}`)
+          } else {
+            ElMessage.error({
+              message: `${res.message}`,
+              duration: 6000,
+            })
+            console.log('下单错误', res.message)
+          }
+          faHuoLoading.value = false
+        } catch (error) {
+          faHuoLoading.value = false
+          console.log('error: ', error)
+        }
+      })
+    }
+    const fahuo2Handle = async () => {
+      faHuoLoading.value = true
+      let item = activeRow.value
+      try {
+        const res = await outboundHandle(item)
+        console.log('res: ', res)
+        if (res.error == 0) {
+          ElMessage.success(`${res.msg}`)
+        } else {
+          ElMessage.error({
+            message: `${res.msg}`,
+            duration: 6000,
+          })
+          console.log('下单错误', res.message)
+        }
+        faHuoLoading.value = false
+        dialogSkusVisible.value = false
+      } catch (error) {
+        faHuoLoading.value = false
+        console.log('error: ', error)
+      }
+    }
     return {
       ...toRefs(mixinViewData),
       getDataList,
+      faHuoHandle,
+      fahuo2Handle,
       editItem,
       exportHandle,
       mixinData,
@@ -297,9 +437,12 @@ export default {
       allStatus,
       copyHandle,
       deleteHandle,
+      skuForm,
+      dialogSkusVisible,
       pageSizeChangeHandle,
       pageCurrentChangeHandle,
       Search,
+      faHuoLoading,
       handleDateChange,
       Plus,
       addKey,
@@ -334,8 +477,8 @@ export default {
     margin: 20px;
   }
 }
-.c0 :deep(.el-input__inner){
-  color: #f504c2
+.c0 :deep(.el-input__inner) {
+  color: #f504c2;
 }
 .c1 :deep(.el-input__inner) {
   color: #e63415;

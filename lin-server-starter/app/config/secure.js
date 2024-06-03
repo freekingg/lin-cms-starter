@@ -3,10 +3,12 @@
 module.exports = {
   db: {
     database: 'packing',
-    host: 'localhost',
+    // host: 'localhost',
+    host: '139.180.197.31',
     dialect: 'mysql',
     port: 3306,
-    username: 'root',
+    // username: 'root',
+    username: 'packing',
     password: '123456789',
     logging: false,
     timezone: '+08:00',

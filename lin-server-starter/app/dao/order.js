@@ -161,6 +161,7 @@ class OrderDao {
     bk.quantity = v.get("body.quantity");
     bk.price = v.get("body.price");
     bk.cost = v.get("body.cost");
+    bk.config = v.get("body.config");
     bk.summary = v.get("body.summary");
     bk.order_summary = v.get("body.order_summary");
     bk.app_id = v.get("body.app_id");
@@ -196,6 +197,7 @@ class OrderDao {
     bk.summary = v.get("body.summary");
     bk.order_summary = v.get("body.order_summary");
     bk.app_id = v.get("body.app_id");
+    bk.config = v.get("body.config");
     bk.create_time = v.get("body.create_time");
     await bk.save();
   }

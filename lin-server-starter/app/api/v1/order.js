@@ -1,8 +1,10 @@
 import { LinRouter, NotFound, disableLoading } from "lin-mizar";
 import ExcelJS from "exceljs";
+import axios from "axios";
 import { groupRequired } from "../../middleware/jwt";
 import {
   OrderSearchValidator,
+  OrderSearchValidator2,
   CreateOrUpdateOrderValidator,
 } from "../../validator/order";
 import { PositiveIdValidator } from "../../validator/common";
@@ -158,5 +160,23 @@ orderApi.linDelete(
     });
   }
 );
+
+orderApi.post("/outbound/create", async (ctx) => {
+  const v = await new OrderSearchValidator2().validate(ctx);
+  let body = v.data.body;
+  console.log("body: ", body);
+  let result = {};
+  try {
+    result = await axios({
+      method: "post",
+      url: "http://47.107.233.69/wms/wms/public/v2/api/stable/outbound/create",
+      data: body,
+    });
+    console.log("result: ", result);
+  } catch (error) {
+    console.log("error: ", error);
+  }
+  ctx.json(result.data);
+});
 
 module.exports = { orderApi, [disableLoading]: false };

@@ -6,13 +6,7 @@
       </template>
       <template #default>
         <div class="content">
-          <el-form
-            :model="dataForm"
-            :rules="rules"
-            ref="dataFormRef"
-            @keyup.enter="dataFormSubmitHandle()"
-            label-width="120px"
-          >
+          <el-form :model="dataForm" :rules="rules" ref="dataFormRef" label-width="120px">
             <el-row>
               <el-col :span="4">
                 <el-form-item label="产品" prop="app_id">
@@ -65,10 +59,15 @@
             </el-row>
 
             <el-form-item label="规格" prop="sku">
-              <el-input v-model.trim="dataForm.sku" />
+              <!-- <el-input v-model.trim="dataForm.sku" /> -->
+              <el-select filterable v-model="dataForm.sku" placeholder="sku" clearable @change="skuChange">
+                <el-option v-for="(group, index) in skus" :key="index" :label="group.label" :value="group.value">
+                </el-option>
+              </el-select>
+              <el-button size="small" style="margin-left: 4px" @click="showSkusHandle">详情</el-button>
             </el-form-item>
             <el-form-item label="数量" prop="quantity">
-              <el-input v-model.trim="dataForm.quantity" />
+              <el-input v-model.trim="dataForm.quantity" type="number" />
             </el-form-item>
             <el-form-item label="FB用户名" prop="fb_name">
               <el-input v-model.trim="dataForm.fb_name" />
@@ -100,10 +99,10 @@
             </el-form-item>
 
             <el-form-item label="备注" prop="summary">
-              <el-input type="textarea" v-model.trim="dataForm.summary" />
+              <el-input type="textarea" v-model="dataForm.summary" />
             </el-form-item>
             <el-form-item label="订单留言" prop="order_summary">
-              <el-input type="textarea" v-model.trim="dataForm.order_summary" />
+              <el-input type="textarea" v-model="dataForm.order_summary" />
             </el-form-item>
             <el-form-item label="订单时间" prop="order_summary">
               <el-date-picker v-model="dataForm.create_time" type="datetime" placeholder="选择日期时间">
@@ -119,6 +118,18 @@
         </div>
       </template>
     </el-drawer>
+
+    <el-dialog v-model="dialogSkusVisible" title="发货信息">
+      <div>
+        <el-input v-model="skuForm" type="textarea" :autosize="{ minRows: 7, maxRows: 15 }" />
+      </div>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button @click="dialogSkusVisible = false">Cancel</el-button>
+          <el-button type="primary" @click="dialogSkusVisible = false"> Confirm </el-button>
+        </div>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
@@ -130,6 +141,7 @@ import { ElMessage } from 'element-plus'
 
 import appModel from '@/model/app'
 const drawer = ref(false)
+const dialogSkusVisible = ref(false)
 const emit = defineEmits(['fetch-data', 'on-visible'])
 
 const props = defineProps({
@@ -153,11 +165,19 @@ watch(
           allApps.value = result.list
           dataForm.app_id = allApps.value[0]['id']
         })
+
         if (props.params.id) {
           title.value = '编辑'
           getInfo()
         } else {
+          createSkus()
           title.value = '添加'
+          if(!dataForm.config.skus){
+            dataForm.config.skus = []
+          }
+          // if (res.config.skus) {
+            // skuForm.value = res.config.skus
+          // }
         }
       })
     }
@@ -179,6 +199,58 @@ const countrys = ref([
     value: 'SA',
   },
 ])
+
+const skus = ref([
+  {
+    label: 'M',
+    value: 'M',
+  },
+  {
+    label: 'L',
+    value: 'L',
+  },
+  {
+    label: 'XL',
+    value: 'XL',
+  },
+  {
+    label: 'XXL',
+    value: 'XXL',
+  },
+  {
+    label: 'XXXL',
+    value: 'XXXL',
+  },
+])
+
+let skuemus = [
+  'UNDERWEAR-1-SHENHUISE-',
+  'UNDERWEAR-1-QIANHUISE-',
+  'UNDERWEAR-1-LVSE-',
+  'UNDERWEAR-1-HEISE-',
+  'UNDERWEAR-1-HUANGSE-',
+]
+const skuForm = ref('')
+const createSkus = () => {
+  let size = dataForm.sku
+  let skus = skuemus.map((item, index) => {
+    return {
+      sku: `${item}${size}`,
+      quantity: index === 0 ? 2 : 1,
+    }
+  })
+  console.log('skus',skus);
+  skuForm.value = JSON.stringify(skus)
+}
+
+const skuChange = ()=>{
+  createSkus()
+}
+
+const showSkusHandle = () => {
+  dialogSkusVisible.value = true
+}
+
 const allStatus = ref([
   {
     label: '待提交',
@@ -234,6 +306,7 @@ const dataForm = reactive({
   cost: '',
   cost: '',
   summary: '',
+  config:{},
   order_summary: '',
   app_id: '',
   create_time: '',
@@ -250,16 +323,20 @@ const rules = ref({
 // 获取信息
 const getInfo = async id => {
   const res = await orderModel.getItem(props.params.id)
-  console.log('res: ', res)
+  if (!res.config) {
+    res.config = {
+      skus: skuForm.value,
+    }
+  } else {
+    if (res.config.skus) {
+      skuForm.value = res.config.skus
+    }
+  }
   Object.assign(dataForm, res)
 }
 
 const close = () => {
   dataFormRef.value.resetFields()
-  // state.dataForm = {
-  //   title: '',
-  //   author: '',
-  // }
   dialogFormVisible.value = false
   emit('on-visible', false)
 }
@@ -267,6 +344,8 @@ const dataFormSubmitHandle = () => {
   dataFormRef.value.validate(async valid => {
     if (valid) {
       let res = {}
+
+      dataForm.config.skus = skuForm.value
       if (props.params.id) {
         res = await orderModel.editItem(props.params.id, dataForm)
       } else {

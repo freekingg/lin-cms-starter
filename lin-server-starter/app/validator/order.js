@@ -7,6 +7,12 @@ class OrderSearchValidator extends PaginateValidator {
   }
 }
 
+class OrderSearchValidator2  extends LinValidator {
+  constructor () {
+    super();
+  }
+}
+
 class CreateOrUpdateOrderValidator extends LinValidator {
   constructor () {
     super();
@@ -16,4 +22,4 @@ class CreateOrUpdateOrderValidator extends LinValidator {
   }
 }
 
-export { CreateOrUpdateOrderValidator, OrderSearchValidator };
+export { CreateOrUpdateOrderValidator, OrderSearchValidator ,OrderSearchValidator2};

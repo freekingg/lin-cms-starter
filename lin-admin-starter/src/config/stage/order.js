@@ -5,7 +5,7 @@ const orderRouter = {
   type: 'folder', // 类型: folder, tab, view
   icon: 'iconfont icon-tushuguanli',
   filePath: 'view/order/',
-  order: null,
+  order: 3,
   inNav: true,
   children: [
     {

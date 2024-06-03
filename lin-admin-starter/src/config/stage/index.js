@@ -26,7 +26,7 @@ let homeRouter = [
     filePath: 'view/log/log.vue',
     inNav: true,
     icon: 'iconfont icon-rizhiguanli',
-    order: 2,
+    order: 8,
     permission: ['查询所有日志'],
   },
   {
@@ -47,16 +47,16 @@ let homeRouter = [
     inNav: false,
     icon: 'iconfont icon-rizhiguanli',
   },
-  appConfig,
   orderConfig,
-  demoConfig,
-  bookConfig,
+  appConfig,
+  // demoConfig,
+  // bookConfig,
   adminConfig,
 ]
 
 // 接入插件
-const plugins = [...pluginsConfig]
-// const plugins = []
+// const plugins = [...pluginsConfig]
+const plugins = []
 filterPlugin(homeRouter)
 homeRouter = homeRouter.concat(plugins)
 

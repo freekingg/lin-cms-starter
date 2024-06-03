@@ -4,6 +4,25 @@
       <el-form-item label="名称" prop="name">
         <el-input v-model.trim="dataForm.name" />
       </el-form-item>
+      <div style="text-align: center; margin-bottom: 5px">
+        <el-button size="small" @click="addSkuHandle">+sku</el-button>
+      </div>
+      <el-form-item label="规格" required>
+        <template v-for="(item, index) in skus" :key="index">
+          <el-col :span="11">
+            <el-form-item prop="date1">
+              <el-input v-model.trim="item.name" />
+            </el-form-item>
+          </el-col>
+          <span class="text-gray-500" style="padding: 0 6px">-</span>
+          <el-col :span="11">
+            <el-form-item prop="date2">
+              <el-input v-model.trim="item.value" />
+            </el-form-item>
+          </el-col>
+        </template>
+      </el-form-item>
+
       <el-form-item label="网站 " prop="url">
         <el-input v-model.trim="dataForm.url" placeholder="请输入网站" />
       </el-form-item>
@@ -19,7 +38,7 @@
 </template>
 
 <script>
-import { toRefs, reactive, watch, nextTick } from 'vue'
+import { toRefs, reactive, watch, nextTick, ref } from 'vue'
 import appModel from '@/model/app'
 import { ElMessage } from 'element-plus'
 
@@ -41,7 +60,8 @@ export default {
       dataForm: {
         name: '',
         summary: '',
-        url:'',
+        url: '',
+        config: {},
       },
       rules: {
         name: [{ required: true, trigger: 'blur', message: '请输入标题' }],
@@ -50,6 +70,12 @@ export default {
       title: '',
       dialogFormVisible: false,
     })
+
+    const skus = ref([{ name: '', value: '' }])
+
+    const addSkuHandle = () => {
+      skus.value.push({ name: '', value: '' })
+    }
 
     watch(
       () => props.addOrUpdateVisible,
@@ -71,7 +97,14 @@ export default {
     // 获取信息
     const getInfo = async () => {
       const res = await appModel.getItem(props.params.id)
+      console.log('res: ', res)
       state.dataForm = res
+      if (!state.dataForm.config) {
+        state.dataForm.config = {}
+        skus.value = [{ name: '', value: '' }]
+      } else {
+        skus.value = state.dataForm.config.skus
+      }
     }
 
     const close = () => {
@@ -87,6 +120,9 @@ export default {
       state.dataFormRef.validate(async valid => {
         if (valid) {
           let res = {}
+
+          state.dataForm.config.skus = skus.value
+          console.log('state.dataForm: ', state.dataForm)
           if (props.params.id) {
             res = await appModel.editItem(props.params.id, state.dataForm)
           } else {
@@ -103,6 +139,8 @@ export default {
 
     return {
       ...toRefs(state),
+      skus,
+      addSkuHandle,
       close,
       dataFormSubmitHandle,
     }
