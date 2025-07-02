@@ -41,6 +41,8 @@ class OrderDao {
     const page = v.get("query.page");
     const limit = v.get("query.limit");
     const condition = {};
+    v.get("query.salesman") &&
+      set(condition, "salesman", v.get("query.salesman"));
     v.get("query.user_phone") &&
       set(condition, "user_phone", v.get("query.user_phone"));
     v.get("query.start") &&
@@ -79,7 +81,7 @@ class OrderDao {
       set(condition, "create_time", {
         [Sequelize.Op.between]: [v.get("query.start"), v.get("query.end")],
       });
-
+      
     const rows = await Order.findAll({
       where: Object.assign({}, condition),
       attributes: [
@@ -94,10 +96,16 @@ class OrderDao {
         [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 4 THEN 1 ELSE 0 END`)), 'status_4_count'],
         [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 5 THEN 1 ELSE 0 END`)), 'status_5_count'],
         [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 6 THEN 1 ELSE 0 END`)), 'status_6_count'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 1 THEN price ELSE 0 END`)), 'status_1_price'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 2 THEN price ELSE 0 END`)), 'status_2_price'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 3 THEN price ELSE 0 END`)), 'status_3_price'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 4 THEN price ELSE 0 END`)), 'status_4_price'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 6 THEN price ELSE 0 END`)), 'status_6_price'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 3 THEN quantity ELSE 0 END`)), 'status_3_quantity'],
+        [Sequelize.fn('SUM', Sequelize.literal(`CASE WHEN status = 4 THEN quantity ELSE 0 END`)), 'status_4_quantity'],
       ],
       group: ["salesman", Sequelize.fn("DATE", Sequelize.col("create_time"))],
       order: [
-        ['salesman', 'ASC'],
         [Sequelize.fn('DATE', Sequelize.col('date')), 'DESC']
       ],
     });

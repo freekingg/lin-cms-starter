@@ -198,6 +198,10 @@ const countrys = ref([
     label: '沙特',
     value: 'SA',
   },
+  {
+    label: '阿联酋',
+    value: 'AE',
+  },
 ])
 
 const skus = ref([
@@ -239,8 +243,7 @@ const createSkus = () => {
       quantity: index === 0 ? 2 : 1,
     }
   })
-  console.log('skus',skus);
-  skuForm.value = JSON.stringify(skus)
+  skuForm.value = JSON.stringify(skus, null, 4)
 }
 
 const skuChange = ()=>{

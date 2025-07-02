@@ -38,31 +38,35 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="total_price" label="待确认" width="100">
+      <el-table-column prop="total_price" label="待确认" width="150">
         <template #default="scope">
           <div style="display: block; color: red">
-            <div>{{ scope.row.status_1_count }}</div>
+            <div>{{ scope.row.status_1_count }}单</div>
+            <div>{{ formatAmount(scope.row.status_1_price,true) }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="total_price" label="已确认" width="100">
+      <el-table-column prop="total_price" label="已确认" width="150">
         <template #default="scope">
-          <div style="display: block; color: green">
-            <div>{{ scope.row.status_2_count }}</div>
+          <div style="display: block; color: green; text-align: center">
+            <div>{{ scope.row.status_2_count }}单</div>
+            <div>{{ formatAmount(scope.row.status_2_price,true) }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="total_price" label="已发货" width="100">
+      <el-table-column prop="total_price" label="已发货" width="150">
         <template #default="scope">
-          <div style="display: block; color: green">
-            <div>{{ scope.row.status_3_count }}</div>
+          <div style="display: block; color: #7365ff">
+            <div>{{ scope.row.status_3_count}}单</div>
+            <div>{{ formatAmount(scope.row.status_3_price,true) }}</div>
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="total_price" label="已签收" width="100">
+      <el-table-column prop="total_price" label="已签收" width="150">
         <template #default="scope">
-          <div style="display: block; color: green">
-            <div>{{ scope.row.status_4_count }}</div>
+          <div style="display: block; color: #7365ff">
+            <div>{{ scope.row.status_4_count }}单</div>
+            <div>{{ formatAmount(scope.row.status_4_price,true) }}</div>
           </div>
         </template>
       </el-table-column>
@@ -80,11 +84,17 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column prop="total_price" label="订单金额(国外货币)"></el-table-column>
-      <el-table-column prop="total_price" label="订单金额(人民币)">
+      <el-table-column prop="total_price" label="有效数量" width="100">
+        <template #default="scope">
+          <div style="display: block; color: green">
+            <div>{{ (+scope.row.status_3_quantity)+(+scope.row.status_4_quantity) }} 件</div>
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column prop="total_price" label="总订单金额">
         <template #default="scope">
           <div style="display: block">
-            <div>{{ (scope.row.total_price * 1.93).toFixed(2) }}</div>
+            <div>{{ formatAmount(scope.row.total_price,true) }}</div>
           </div>
         </template>
       </el-table-column>
@@ -159,10 +169,20 @@ export default {
       const lastWeek = new Date()
       lastWeek.setDate(today.getDate() - 6) // 设置为最近一周的开始日期
       queryDate.value = [lastWeek, today] // 设置默认日期范围
-      mixinViewData.queryForm.start =dayjs(lastWeek).format('YYYY-MM-DD HH:mm:ss')
+      mixinViewData.queryForm.start = dayjs(lastWeek).format('YYYY-MM-DD HH:mm:ss')
       mixinViewData.queryForm.end = dayjs(today).format('YYYY-MM-DD HH:mm:ss')
       getDataList()
     })
+
+    const formatAmount = (amount=0,trans=false) => {
+      let num = parseFloat(amount)
+      if(trans){
+        num = num * 1.93
+      }
+      return `¥ ${parseFloat(num).toFixed(2).replace(/\d(?=(\d{3})+\.)/g, '$&,')}`;
+
+
+    }
 
     const shortcuts = [
       {
@@ -226,6 +246,7 @@ export default {
       mixinData,
       shortcuts,
       queryDate,
+      formatAmount,
       addOrUpdateHandle,
       onVisibleHandle,
       deleteHandle,

@@ -14,8 +14,14 @@
     <!-- 表格 -->
     <el-table :data="mixinData.dataList" border v-loading="mixinData.dataListLoading">
       <el-table-column type="index" label="序号" width="100"></el-table-column>
-      <el-table-column prop="name" label="名称"></el-table-column>
-      <el-table-column prop="url" label="域名"></el-table-column>
+      <el-table-column prop="username" label="主号"></el-table-column>
+      <el-table-column prop="friendname" label="好友"></el-table-column>
+      <el-table-column prop="type" label="类型">
+        <template #default="scope">
+          <el-link v-if="scope.row.type === 1">个人</el-link>
+          <el-link v-if="scope.row.type === 2">群组</el-link>
+        </template>
+      </el-table-column>
       <el-table-column prop="summary" label="备注"></el-table-column>
       <el-table-column prop="create_time" label="创建时间" width="150"></el-table-column>
       <el-table-column label="操作" fixed="right" width="220">
@@ -76,7 +82,7 @@
 import { onMounted, toRefs, reactive, ref, nextTick } from 'vue'
 import { Search, Plus } from '@element-plus/icons-vue'
 import useViewModule from '@/lin/hook/view-module'
-import appModel from '@/model/app'
+import userModel from '@/model/user'
 import ConfigDetailDrawer from '@/view/app/components/config-detail-drawer.vue'
 import AddOrUpdate from './components/app-add-or-update'
 
@@ -87,7 +93,7 @@ export default {
   },
   setup() {
     const mixinViewData = reactive({
-      apiModal: appModel,
+      apiModal: userModel,
       getDataListIsPage: true,
       createdIsNeed: true,
       queryForm: {},
@@ -109,7 +115,7 @@ export default {
     const configUpdateHandle = row => {
       addKey.value++
       nextTick(() => {
-        let info = {
+        const info = {
           ...row,
           memberId: row.id,
         }

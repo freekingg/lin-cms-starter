@@ -17,6 +17,15 @@ const appRouter = {
       inNav: true,
       icon: 'iconfont icon-tushuguanli',
     },
+    {
+      title: '联系人列表',
+      type: 'view',
+      name: 'userList',
+      route: '/user/list',
+      filePath: 'view/app/user-list.vue',
+      inNav: true,
+      icon: 'iconfont icon-tushuguanli',
+    },
   ],
 }
 

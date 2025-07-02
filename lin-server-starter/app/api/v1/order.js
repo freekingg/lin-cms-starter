@@ -63,7 +63,8 @@ orderApi.get("/export/file", async (ctx) => {
   // 添加表头
   sheet.columns = [
     { header: "订单号", key: "id", width: 10 },
-    { header: "业务员", key: "courier", width: 10 },
+    { header: "日期", key: "create_time", width: 10 },
+    { header: "业务员", key: "salesman", width: 10 },
     { header: "国家", key: "country", width: 30 },
     { header: "FB账号", key: "fb_name", width: 30 },
     { header: "收货人姓名", key: "user_name", width: 20 },
@@ -75,7 +76,7 @@ orderApi.get("/export/file", async (ctx) => {
     { header: "规格", key: "sku" },
     { header: "价格", key: "price" },
     { header: "数量", key: "quantity" },
-    { header: "状态", key: "status" },
+    { header: "状态(3:已发货，4：已签收)", key: "status" },
     { header: "备注", key: "summary" },
     { header: "订单留言", key: "order_summary" },
   ];
@@ -83,7 +84,8 @@ orderApi.get("/export/file", async (ctx) => {
   items.map((item) => {
     sheet.addRow({
       id: item.id,
-      courier: item.courier,
+      create_time: item.create_time,
+      salesman: item.salesman,
       country: item.country,
       fb_name: item.fb_name,
       user_name: item.user_name,
@@ -161,22 +163,26 @@ orderApi.linDelete(
   }
 );
 
-orderApi.post("/outbound/create", async (ctx) => {
-  const v = await new OrderSearchValidator2().validate(ctx);
-  let body = v.data.body;
-  console.log("body: ", body);
-  let result = {};
-  try {
-    result = await axios({
-      method: "post",
-      url: "http://47.107.233.69/wms/wms/public/v2/api/stable/outbound/create",
-      data: body,
-    });
-    console.log("result: ", result);
-  } catch (error) {
-    console.log("error: ", error);
+orderApi.linPost(
+  "outboundOrder",
+  "/outbound/create",
+  orderApi.permission("发货"),
+  groupRequired,
+  async (ctx) => {
+    const v = await new OrderSearchValidator2().validate(ctx);
+    let body = v.data.body;
+    let result = {};
+    try {
+      result = await axios({
+        method: "post",
+        url: "http://47.107.233.69/wms/wms/public/v2/api/stable/outbound/create",
+        data: body,
+      });
+    } catch (error) {
+      console.log("error: ", error);
+    }
+    ctx.json(result.data);
   }
-  ctx.json(result.data);
-});
+);
 
 module.exports = { orderApi, [disableLoading]: false };

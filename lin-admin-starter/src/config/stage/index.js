@@ -50,7 +50,7 @@ let homeRouter = [
   orderConfig,
   appConfig,
   // demoConfig,
-  // bookConfig,
+  bookConfig,
   adminConfig,
 ]
 

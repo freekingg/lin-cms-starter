@@ -13,6 +13,10 @@
           </el-select>
         </el-form-item>
 
+        <el-form-item label="业务员">
+          <el-input v-model="queryForm.salesman" placeholder="请输入" clearable />
+        </el-form-item>
+
         <el-form-item label="日期">
           <lin-date-picker @dateChange="handleDateChange" ref="searchDateDom" class="date"> </lin-date-picker>
         </el-form-item>
@@ -213,7 +217,6 @@ export default {
     const defaultTime = ref([new Date(2000, 1, 1, 0, 0, 0), new Date(2000, 2, 1, 23, 59, 59)])
 
     const handleDateChange = date => {
-      console.log('date: ', date)
       if (date) {
         mixinViewData.queryForm.start = dayjs(date[0]).format('YYYY-MM-DD HH:mm:ss')
         mixinViewData.queryForm.end = dayjs(date[1]).format('YYYY-MM-DD HH:mm:ss')
@@ -329,6 +332,17 @@ export default {
         skus = JSON.parse(skuForm.value)
       }
 
+      let emus = {
+        'SA':{
+          currency:'SAR',
+          country_2_code:'SA',
+        },
+        'AE':{
+          currency:'AED',
+          country_2_code:'AE',
+        }
+      }
+
       let data = {
         api_key: 'cd64ddf746489da0716818bd8b68a65f640004',
         warehouse: 'ccdb60069df22b045f7648af732bd631952743',
@@ -340,14 +354,14 @@ export default {
         orders_declared_currency: 'USD',
         orders_cod_value: row.price,
         orders_remark: row.order_summary,
-        orders_cod_currency: 'SAR',
+        orders_cod_currency: emus[row.country]['currency'],
         orders_consignee_name: row.user_name,
         orders_consignee_tel: row.user_phone,
         orders_consignee_address: row.user_address,
         orders_consignee_province: row.user_province,
         orders_consignee_city: row.user_city,
         orders_cust_declared_weight: '1',
-        orders_consignee_country_2_code: 'SA',
+        orders_consignee_country_2_code: emus[row.country]['country_2_code'],
         orders_product_hs_code: '6107110000',
         orders_product_hs_code: '6107110000',
         orders_goods_type: 'GC',
